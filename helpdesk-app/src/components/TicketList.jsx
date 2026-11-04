@@ -2,29 +2,40 @@ import { useState } from "react";
 import { useTicket } from "../context/TicketContext";
 
 function TicketList() {
-  const { tickets, updateTicketStatus, clearTickets } = useTicket();
+  const { tickets, updateTicketStatus, deleteTicket, clearTickets } =
+    useTicket();
 
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
   const categories = [...new Set(tickets.map((ticket) => ticket.category))];
 
+  // Poin d, e, i: Filter gabungan (Search Judul/Nama + Kategori + Prioritas + Status)
   const filteredTickets = tickets.filter((ticket) => {
-    const matchSearch = ticket.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    const keyword = search.toLowerCase();
+    const matchSearch =
+      ticket.title.toLowerCase().includes(keyword) ||
+      ticket.name.toLowerCase().includes(keyword);
 
     const matchCategory =
       categoryFilter === "" || ticket.category === categoryFilter;
 
-    const matchStatus = statusFilter === "" || ticket.status === statusFilter;
+    const matchPriority =
+      priorityFilter === "" || ticket.priority === priorityFilter;
 
-    return matchSearch && matchCategory && matchStatus;
+    const matchStatus =
+      statusFilter === "" || ticket.status === statusFilter;
+
+    return matchSearch && matchCategory && matchPriority && matchStatus;
   });
 
+  // Poin c: Badge berbeda untuk Critical
   const priorityBadge = (priority) => {
     switch (priority) {
+      case "Critical":
+        return "bg-dark text-white";
       case "High":
         return "bg-danger";
       case "Medium":
@@ -61,18 +72,19 @@ function TicketList() {
       </div>
 
       <div className="card-body">
+        {/* Baris Filter & Pencarian (Poin d, e, i) */}
         <div className="row g-2 mb-3">
-          <div className="col-md-5">
+          <div className="col-md-3">
             <input
               type="text"
               className="form-control"
-              placeholder="Cari berdasarkan judul..."
+              placeholder="Cari judul / pelapor..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
 
-          <div className="col-md-4">
+          <div className="col-md-3">
             <select
               className="form-select"
               value={categoryFilter}
@@ -84,6 +96,20 @@ function TicketList() {
                   {category}
                 </option>
               ))}
+            </select>
+          </div>
+
+          <div className="col-md-3">
+            <select
+              className="form-select"
+              value={priorityFilter}
+              onChange={(event) => setPriorityFilter(event.target.value)}
+            >
+              <option value="">Semua Prioritas</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
             </select>
           </div>
 
@@ -116,7 +142,7 @@ function TicketList() {
                 <tr>
                   <th>No. Ticket</th>
                   <th>Masalah</th>
-                  <th>Kategori</th>
+                  <th>Kategori & Lokasi</th>
                   <th>Prioritas</th>
                   <th>Status</th>
                   <th>Pelapor</th>
@@ -135,7 +161,10 @@ function TicketList() {
                         {ticket.description}
                       </div>
                     </td>
-                    <td>{ticket.category}</td>
+                    <td>
+                      <div>{ticket.category}</div>
+                      <div className="small text-muted">{ticket.location}</div>
+                    </td>
                     <td>
                       <span
                         className={`badge ${priorityBadge(ticket.priority)}`}
@@ -153,17 +182,31 @@ function TicketList() {
                       <div className="small text-muted">{ticket.email}</div>
                     </td>
                     <td>
-                      <select
-                        className="form-select form-select-sm"
-                        value={ticket.status}
-                        onChange={(event) =>
-                          updateTicketStatus(ticket.id, event.target.value)
-                        }
-                      >
-                        <option value="Open">Open</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                      </select>
+                      <div className="d-flex gap-2 align-items-center">
+                        {/* Poin h: Jika status Resolved, opsi Open tidak ditampilkan */}
+                        <select
+                          className="form-select form-select-sm"
+                          value={ticket.status}
+                          onChange={(event) =>
+                            updateTicketStatus(ticket.id, event.target.value)
+                          }
+                        >
+                          {ticket.status !== "Resolved" && (
+                            <option value="Open">Open</option>
+                          )}
+                          <option value="In Progress">In Progress</option>
+                          <option value="Resolved">Resolved</option>
+                        </select>
+
+                        {/* Poin f: Tombol Delete per ticket */}
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => deleteTicket(ticket.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

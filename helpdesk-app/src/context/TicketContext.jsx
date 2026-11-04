@@ -19,17 +19,28 @@ export function TicketProvider({ children }) {
     ]);
   };
 
-  // Mengubah status ticket
+  // Mengubah status ticket (Poin h: Resolved tidak bisa kembali ke Open)
   const updateTicketStatus = (id, status) => {
     setTickets((previousTickets) =>
-      previousTickets.map((ticket) =>
-        ticket.id === id
-          ? {
-              ...ticket,
-              status,
-            }
-          : ticket
-      )
+      previousTickets.map((ticket) => {
+        if (ticket.id === id) {
+          if (ticket.status === "Resolved" && status === "Open") {
+            return ticket;
+          }
+          return {
+            ...ticket,
+            status,
+          };
+        }
+        return ticket;
+      })
+    );
+  };
+
+  // Menghapus 1 ticket berdasarkan ID (Poin f)
+  const deleteTicket = (id) => {
+    setTickets((previousTickets) =>
+      previousTickets.filter((ticket) => ticket.id !== id)
     );
   };
 
@@ -44,6 +55,7 @@ export function TicketProvider({ children }) {
         tickets,
         addTicket,
         updateTicketStatus,
+        deleteTicket,
         clearTickets,
       }}
     >

@@ -5,11 +5,12 @@ function TicketForm() {
   const { addTicket } = useTicket();
   const [categories, setCategories] = useState([]);
 
-  // State untuk menyimpan seluruh data form
+  // State untuk menyimpan seluruh data form (Ditambah location)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     category: "",
+    location: "",
     priority: "",
     title: "",
     description: "",
@@ -22,10 +23,11 @@ function TicketForm() {
   // State untuk pesan sukses
   const [successMessage, setSuccessMessage] = useState("");
 
-  // Ref untuk masing-masing input
+  // Ref untuk masing-masing input (Ditambah locationRef)
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const categoryRef = useRef(null);
+  const locationRef = useRef(null);
   const priorityRef = useRef(null);
   const titleRef = useRef(null);
   const descriptionRef = useRef(null);
@@ -74,6 +76,12 @@ function TicketForm() {
       case "category":
         if (!value) {
           message = "Kategori harus dipilih.";
+        }
+        break;
+
+      case "location":
+        if (!value) {
+          message = "Lokasi kejadian harus dipilih.";
         }
         break;
 
@@ -147,6 +155,10 @@ function TicketForm() {
       validationErrors.category = "Kategori harus dipilih.";
     }
 
+    if (!formData.location) {
+      validationErrors.location = "Lokasi kejadian harus dipilih.";
+    }
+
     if (!formData.priority) {
       validationErrors.priority = "Prioritas harus dipilih.";
     }
@@ -192,6 +204,8 @@ function TicketForm() {
       emailRef.current.focus();
     } else if (validationErrors.category) {
       categoryRef.current.focus();
+    } else if (validationErrors.location) {
+      locationRef.current.focus();
     } else if (validationErrors.priority) {
       priorityRef.current.focus();
     } else if (validationErrors.title) {
@@ -239,6 +253,7 @@ function TicketForm() {
       name: "",
       email: "",
       category: "",
+      location: "",
       priority: "",
       title: "",
       description: "",
@@ -257,6 +272,7 @@ function TicketForm() {
       name: "",
       email: "",
       category: "",
+      location: "",
       priority: "",
       title: "",
       description: "",
@@ -314,7 +330,7 @@ function TicketForm() {
             )}
           </div>
 
-          {/* CATEGORY */}
+          {/* CATEGORY (Poin b: Security otomatis tampil dari categories.json) */}
           <div className="mb-3">
             <label className="form-label">Kategori Permasalahan</label>
             <select
@@ -336,7 +352,28 @@ function TicketForm() {
             )}
           </div>
 
-          {/* PRIORITY */}
+          {/* LOCATION (Poin a: Dropdown Lokasi Kejadian) */}
+          <div className="mb-3">
+            <label className="form-label">Lokasi Kejadian</label>
+            <select
+              ref={locationRef}
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              className={`form-select ${errors.location ? "is-invalid" : ""}`}
+            >
+              <option value="">-- Pilih Lokasi --</option>
+              <option value="Laboratorium">Laboratorium</option>
+              <option value="Ruang Kelas">Ruang Kelas</option>
+              <option value="Ruang Dosen">Ruang Dosen</option>
+              <option value="Area Umum">Area Umum</option>
+            </select>
+            {errors.location && (
+              <div className="invalid-feedback">{errors.location}</div>
+            )}
+          </div>
+
+          {/* PRIORITY (Poin c: Tambah pilihan Critical) */}
           <div className="mb-3">
             <label className="form-label">Prioritas</label>
             <select
@@ -350,6 +387,7 @@ function TicketForm() {
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
               <option value="High">High</option>
+              <option value="Critical">Critical</option>
             </select>
             {errors.priority && (
               <div className="invalid-feedback">{errors.priority}</div>
