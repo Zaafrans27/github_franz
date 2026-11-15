@@ -6,12 +6,8 @@ function TicketSummary() {
   // Ringkasan Status
   const total = tickets.length;
   const open = tickets.filter((ticket) => ticket.status === "Open").length;
-  const progress = tickets.filter(
-    (ticket) => ticket.status === "In Progress"
-  ).length;
-  const resolved = tickets.filter(
-    (ticket) => ticket.status === "Resolved"
-  ).length;
+  const progress = tickets.filter((ticket) => ticket.status === "In Progress").length;
+  const resolved = tickets.filter((ticket) => ticket.status === "Resolved").length;
 
   // Ringkasan Kategori (Poin g)
   const categoryList = [
