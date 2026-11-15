@@ -7,10 +7,10 @@ import { hitungBMI } from "@/lib/bmi";
 
 export default function Page() {
   const params = useParams();
-  
-  // PENGAMAN: Cek apakah params.namalengkap ada isinya. Jika tidak ada (saat build), beri nilai string kosong ""
   const namaLengkap = params?.namalengkap || "";
-  const nama = namaLengkap ? decodeURIComponent(namaLengkap).replaceAll("-", " ") : "";
+  const nama = namaLengkap
+    ? decodeURIComponent(namaLengkap).replaceAll("-", " ")
+    : "";
 
   const [berat, setBerat] = useState("");
   const [tinggi, setTinggi] = useState("");
@@ -31,7 +31,6 @@ export default function Page() {
     <main style={{ maxWidth: 360, margin: "40px auto", padding: "0 16px" }}>
       <h1>Halo, {nama}</h1>
 
-      {/* Latihan 5: Link kembali ke halaman utama (/) */}
       <Link href="/" style={{ color: "blue", textDecoration: "underline" }}>
         Bukan kamu? Ganti nama
       </Link>
