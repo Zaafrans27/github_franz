@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link"; // Latihan 5: Import Link dari next/link
-import { hitungBMI } from "@/lib/bmi"; // Latihan 2: Import fungsi dari lib/bmi.js
+import { useState, use } from "react"; // Tambahkan use
+import Link from "next/link";
+import { hitungBMI } from "@/lib/bmi";
 
-export default function Page() {
-  const params = useParams();
-  const nama = decodeURIComponent(params.namalengkap).replaceAll("-", " ");
+
+export default function Page({ params }) {
+  const unwrappedParams = use(params);
+  const nama = decodeURIComponent(unwrappedParams.namalengkap).replaceAll("-", " ");
 
   const [berat, setBerat] = useState("");
   const [tinggi, setTinggi] = useState("");
