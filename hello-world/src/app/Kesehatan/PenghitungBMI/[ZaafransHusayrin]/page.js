@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, use } from "react"; // Tambahkan use
+import { useState } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { hitungBMI } from "@/lib/bmi";
 
-
-export default function Page({ params }) {
-  const unwrappedParams = use(params);
-  const nama = decodeURIComponent(unwrappedParams.namalengkap).replaceAll("-", " ");
+export default function Page() {
+  const params = useParams();
+  
+  // PENGAMAN: Cek apakah params.namalengkap ada isinya. Jika tidak ada (saat build), beri nilai string kosong ""
+  const namaLengkap = params?.namalengkap || "";
+  const nama = namaLengkap ? decodeURIComponent(namaLengkap).replaceAll("-", " ") : "";
 
   const [berat, setBerat] = useState("");
   const [tinggi, setTinggi] = useState("");
@@ -18,7 +21,6 @@ export default function Page({ params }) {
     setHasil(hitungBMI(Number.parseFloat(berat), Number.parseFloat(tinggi)));
   }
 
-  // Latihan 4: Fungsi untuk mengosongkan input berat, tinggi, dan hasil
   function handleReset() {
     setBerat("");
     setTinggi("");
@@ -72,13 +74,11 @@ export default function Page({ params }) {
           Hitung
         </button>
 
-        {/* Latihan 4: Tombol Reset dengan type="button" agar tidak memicu submit form */}
         <button type="button" onClick={handleReset} style={{ padding: 8 }}>
           Reset
         </button>
       </form>
 
-      {/* Latihan 3: Menampilkan hasil dengan warna sesuai kategori */}
       {hasil && (
         <p style={{ marginTop: 16, color: hasil.warna }}>
           BMI kamu: <strong>{hasil.bmi}</strong> ({hasil.kategori})
